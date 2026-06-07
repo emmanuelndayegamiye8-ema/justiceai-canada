@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mes dossiers - Justice AI Canada</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container { max-width: 1000px; margin: 0 auto; }
+        header {
+            background: white;
+            padding: 20px 30px;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .back-btn {
+            background: #667eea;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 10px;
+            text-decoration: none;
+        }
+        .cases-list { display: flex; flex-direction: column; gap: 20px; }
+        .case-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        .case-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        .case-number { font-weight: bold; color: #667eea; font-size: 18px; }
+        .case-date { color: #999; font-size: 14px; }
+        .case-accusation { background: #f0f0f0; padding: 5px 12px; border-radius: 20px; font-size: 14px; }
+        .case-description { color: #555; margin: 15px 0; }
+        .case-actions { display: flex; gap: 15px; margin-top: 15px; }
+        .btn-small { padding: 8px 16px; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; }
+        .btn-view { background: #667eea; color: white; }
+        .btn-delete { background: #e74c3c; color: white; }
+        .empty-state { text-align: center; padding: 60px; background: white; border-radius: 20px; }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .modal-content {
+            background: white;
+            max-width: 500px;
+            width: 90%;
+            padding: 30px;
+            border-radius: 20px;
+            max-height: 80%;
+            overflow-y: auto;
+        }
+        .modal-header { display: flex; justify-content: space-between; margin-bottom: 20px; }
+        .close-modal { cursor: pointer; font-size: 24px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📁 Mes dossiers de défense</h1>
+            <a href="index.html" class="back-btn">← Retour</a>
+        </header>
+        <div id="casesContainer" class="cases-list"></div>
+    </div>
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Détail du dossier</h3>
+                <span class="close-modal" onclick="closeModal()">&times;</span>
+            </div>
+            <div id="modalBody"></div>
+        </div>
+    </div>
+    <script>
+        let currentCases = [];
+        function loadCases() {
+            const saved = localStorage.getItem('justice_ai_cases');
+            currentCases = saved ? JSON.parse(saved) : [];
+            const container = document.getElementById('casesContainer');
+            if (currentCases.length === 0) {
+                container.innerHTML = `<div class="empty-state"><h2>📭 Aucun dossier</h2><a href="nouveau-dossier.html" style="display:inline-block;margin-top:20px;padding:12px 30px;background:#e74c3c;color:white;border-radius:50px;text-decoration:none;">Créer un dossier →</a></div>`;
+                return;
+            }
+            container.innerHTML = currentCases.map((c, i) => `
+                <div class="case-card">
+                    <div class="case-header">
+                        <span class="case-number">📄 ${c.case_number}</span>
+                        <span class="case-date">${new Date(c.date).toLocaleDateString('fr-CA')}</span>
+                        <span class="case-accusation">${c.accusation || 'Non précisée'}</span>
+                    </div>
+                    <div class="case-description">${c.description ? c.description.substring(0, 150) + '...' : 'Aucune description'}</div>
+                    <div class="case-actions">
+                        <button class="btn-small btn-view" onclick="viewCase(${i})">Voir détail</button>
+                        <button class="btn-small btn-delete" onclick="deleteCase(${i})">Supprimer</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+        function viewCase(i) {
+            const c = currentCases[i];
+            document.getElementById('modalBody').innerHTML = `
+                <p><strong>Numéro:</strong> ${c.case_number}</p>
+                <p><strong>Date:</strong> ${new Date(c.date).toLocaleString('fr-CA')}</p>
+                <p><strong>Nom:</strong> ${c.nom}</p>
+                <p><strong>Email:</strong> ${c.email}</p>
+                <p><strong>Province:</strong> ${c.province}</p>
+                <p><strong>Accusation:</strong> ${c.accusation}</p>
+                <p><strong>Description:</strong></p>
+                <p style="background:#f5f5f5;padding:10px;border-radius:8px;">${c.description}</p>
+                ${c.guide ? `<hr><strong>📋 Guide de défense:</strong><div style="background:#f0fdf4;padding:15px;border-radius:8px;white-space:pre-wrap;">${c.guide}</div>` : ''}
+            `;
+            document.getElementById('modal').style.display = 'flex';
+        }
+        function closeModal() { document.getElementById('modal').style.display = 'none'; }
+        function deleteCase(i) {
+            if (confirm('Supprimer ce dossier ?')) {
+                currentCases.splice(i, 1);
+                localStorage.setItem('justice_ai_cases', JSON.stringify(currentCases));
+                loadCases();
+            }
+        }
+        loadCases();
+        window.onclick = function(e) { if (e.target === document.getElementById('modal')) closeModal(); }
+    </script>
+</body>
+</html>
