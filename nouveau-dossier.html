@@ -2,154 +2,154 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Justice AI - Assistant juridique</title>
+    <title>Justice AI – Aide gratuite</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
+        *{margin:0;padding:0;box-sizing:border-box;}
+        body{
+            background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);
+            font-family:'Segoe UI',sans-serif;
+            padding:20px;
+            min-height:100vh;
+            display:flex;
+            align-items:center;
+            justify-content:center;
         }
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 20px;
-            overflow: hidden;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        .box{
+            max-width:600px;
+            background:white;
+            border-radius:30px;
+            padding:30px;
+            box-shadow:0 20px 40px rgba(0,0,0,0.3);
         }
-        .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 30px;
-            text-align: center;
+        h1{
+            background:linear-gradient(135deg,#667eea,#764ba2);
+            -webkit-background-clip:text;
+            background-clip:text;
+            color:transparent;
         }
-        .header h1 { font-size: 28px; margin-bottom: 10px; }
-        .body { padding: 30px; }
-        .form-group { margin-bottom: 20px; }
-        label { display: block; font-weight: 600; margin-bottom: 8px; color: #333; }
-        input, select, textarea {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
-            font-size: 16px;
-            font-family: inherit;
+        input,select,textarea{
+            width:100%;
+            padding:12px;
+            margin:10px 0 20px;
+            border:2px solid #ddd;
+            border-radius:16px;
+            font-size:16px;
         }
-        button {
-            width: 100%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            padding: 15px;
-            font-size: 18px;
-            font-weight: bold;
-            border-radius: 10px;
-            cursor: pointer;
+        button{
+            width:100%;
+            background:linear-gradient(135deg,#667eea,#764ba2);
+            color:white;
+            border:none;
+            padding:14px;
+            border-radius:40px;
+            font-size:18px;
+            font-weight:bold;
+            cursor:pointer;
         }
-        .result {
-            margin-top: 20px;
-            padding: 20px;
-            background: #f8f9fa;
-            border-radius: 10px;
-            display: none;
-            border-left: 4px solid #27ae60;
-            white-space: pre-wrap;
-            line-height: 1.6;
+        .reponse{
+            margin-top:25px;
+            padding:20px;
+            background:#f0f4ff;
+            border-radius:20px;
+            white-space:pre-wrap;
+            display:none;
         }
-        .loading { text-align: center; padding: 20px; color: #667eea; }
-        .disclaimer { font-size: 12px; color: #999; text-align: center; margin-top: 20px; }
+        .small{font-size:12px;color:#888;margin-top:20px;text-align:center;}
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>⚖️ Justice AI Canada</h1>
-            <p>Assistant juridique gratuit - Alimenté par Llama 3 (local)</p>
-        </div>
-        <div class="body">
-            <form id="justiceForm">
-                <div class="form-group">
-                    <label>Province</label>
-                    <select id="province" required>
-                        <option value="">Sélectionnez</option>
-                        <option>Ontario</option>
-                        <option>Québec</option>
-                        <option>Colombie-Britannique</option>
-                        <option>Alberta</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Type d'accusation</label>
-                    <select id="accusation" required>
-                        <option value="">Sélectionnez</option>
-                        <option>Vol à l'étalage</option>
-                        <option>Fraude</option>
-                        <option>Agression</option>
-                        <option>Menaces</option>
-                        <option>Autre</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Décrivez votre situation</label>
-                    <textarea id="description" rows="5" placeholder="Décrivez ce qui s'est passé (dates, lieux, témoins..."></textarea>
-                </div>
-                <button type="submit">📝 Générer mon guide de défense</button>
-            </form>
-            <div id="result" class="result"></div>
-            <div class="disclaimer">⚖️ L'IA ne remplace pas un avocat. Llama 3 tourne localement sur votre ordinateur.</div>
-        </div>
-    </div>
+<div class="box">
+    <h1>⚖️ Justice AI Canada</h1>
+    <p>Assistant juridique gratuit – sans installation</p>
 
-    <script>
-        // Appel à votre backend Llama 3 local
-        const API_URL = 'http://localhost:3001/api/generate-guide';
-        
-        document.getElementById('justiceForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const province = document.getElementById('province').value;
-            const accusation = document.getElementById('accusation').value;
-            const description = document.getElementById('description').value;
-            
-            const resultDiv = document.getElementById('result');
-            resultDiv.style.display = 'block';
-            resultDiv.innerHTML = '<div class="loading">🤖 Llama 3 analyse votre situation...</div>';
-            
-            try {
-                const response = await fetch(API_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ province, accusation, description })
-                });
-                
-                const data = await response.json();
-                const guide = data.guide;
-                
-                // Sauvegarder dans localStorage
-                const dossier = {
-                    id: Date.now(),
-                    date: new Date().toLocaleString(),
-                    province, accusation, description,
-                    guide: guide.substring(0, 500)
-                };
-                const dossiers = JSON.parse(localStorage.getItem('justice_dossiers') || '[]');
-                dossiers.push(dossier);
-                localStorage.setItem('justice_dossiers', JSON.stringify(dossiers));
-                
-                resultDiv.innerHTML = `
-                    <h3>✅ Votre guide de défense (généré par Llama 3)</h3>
-                    <hr>
-                    ${guide.replace(/\n/g, '<br>')}
-                    <hr>
-                    <button onclick="window.location.href='mes-dossiers.html'" style="margin-top:15px; padding:10px; background:#667eea; color:white; border:none; border-radius:8px; cursor:pointer;">📁 Voir mes dossiers</button>
-                `;
-            } catch (error) {
-                resultDiv.innerHTML = '<p style="color:red;">❌ Erreur : Le serveur Llama 3 n\'est pas démarré.</p><p>Ouvrez un PowerShell et tapez : cd C:\\justice-ai-backend puis npm start</p><p>Assurez-vous aussi que ollama serve tourne dans un autre PowerShell.</p>';
-            }
+    <label>Province</label>
+    <select id="province">
+        <option>Ontario</option><option>Québec</option>
+        <option>Colombie-Britannique</option><option>Alberta</option>
+    </select>
+
+    <label>Accusation</label>
+    <select id="accusation">
+        <option>Vol à l'étalage</option><option>Fraude</option>
+        <option>Agression</option><option>Menaces</option>
+    </select>
+
+    <label>Décrivez votre situation</label>
+    <textarea id="situation" rows="5" placeholder="Dates, lieux, témoins..."></textarea>
+
+    <button id="btn">📘 Générer mon guide de défense</button>
+
+    <div id="resultat" class="reponse"></div>
+    <div class="small">⚖️ L'IA ne remplace pas un avocat. Guide basé sur des principes juridiques canadiens.</div>
+</div>
+
+<script>
+    document.getElementById("btn").onclick = async function() {
+        const province = document.getElementById("province").value;
+        const accusation = document.getElementById("accusation").value;
+        const situation = document.getElementById("situation").value;
+
+        const resultDiv = document.getElementById("resultat");
+        resultDiv.style.display = "block";
+        resultDiv.innerHTML = "🤖 Préparation de votre défense...";
+
+        // Guide intelligent sans API externe (totalement autonome)
+        let conseil = "";
+
+        if (accusation === "Vol à l'étalage") {
+            conseil = "1️⃣ RAPPEL DES DROITS (Canada) :\n• Droit au silence\n• Droit à un avocat avant toute déclaration\n• Présomption d'innocence\n\n";
+            conseil += "2️⃣ CONSEILS SPÉCIFIQUES POUR VOL À L'ÉTALAGE :\n";
+            conseil += "→ Conservez TOUS vos reçus et tickets de caisse.\n";
+            conseil += "→ Notez les noms des témoins (caissière, clients).\n";
+            conseil += "→ Ne signez rien sans avocat.\n";
+            conseil += "→ Demandez la vidéosurveillance (droit à la preuve).\n\n";
+        } 
+        else if (accusation === "Fraude") {
+            conseil = "1️⃣ RAPPEL DES DROITS (Canada) :\n• Présomption d'innocence\n• Droit à un avocat\n• Divulgation complète de la preuve\n\n";
+            conseil += "2️⃣ CONSEILS POUR UNE ACCUSATION DE FRAUDE :\n";
+            conseil += "→ Rassemblez tous les documents (contrats, emails, relevés).\n";
+            conseil += "→ Ne discutez pas avec la police sans avocat.\n";
+            conseil += "→ Vérifiez les délais de prescription.\n\n";
+        }
+        else if (accusation === "Agression") {
+            conseil = "1️⃣ RAPPEL DES DROITS FONDAMENTAUX :\n• Droit à un avocat (immédiat)\n• Droit au silence\n• Présomption d'innocence\n\n";
+            conseil += "2️⃣ SPÉCIFIQUE À UNE ACCUSATION D'AGRESSION :\n";
+            conseil += "→ Ne contactez pas la victime présumée.\n";
+            conseil += "→ Notez tout ce que vous avez vu / entendu.\n";
+            conseil += "→ Cherchez un avocat spécialisé en droit criminel.\n\n";
+        }
+        else {
+            conseil = "1️⃣ RAPPEL DE LA CHARTE CANADIENNE :\n• Droit au silence\n• Droit à l'assistance d'un avocat\n• Présomption d'innocence\n\n";
+            conseil += "2️⃣ CONSEILS GÉNÉRAUX :\n";
+            conseil += "→ Ne parlez jamais à la police sans avocat.\n";
+            conseil += "→ Rassemblez toutes les preuves écrites et photos.\n";
+            conseil += "→ Contactez Aide juridique : 1-855-255-7256.\n\n";
+        }
+
+        conseil += "3️⃣ RESSOURCES GRATUITES DANS " + province + " :\n";
+        conseil += "• Aide juridique Canada : 1-855-255-7256\n";
+        conseil += "• Pro Bono " + province + " (recherche en ligne)\n";
+        conseil += "• Cliniques juridiques universitaires\n\n";
+
+        conseil += "4️⃣ PROCHAINES ÉTAPES :\n";
+        conseil += "✔️ Consultez un avocat ou une clinique juridique.\n";
+        conseil += "✔️ N'acceptez aucun plaidoyer sans conseil.\n";
+        conseil += "✔️ Écrivez votre version des faits heure par heure.\n\n";
+
+        conseil += "📌 " + situation.substring(0, 300) + "\n";
+        conseil += "\n⚠️ Ce guide est un outil d'aide. L'IA ne remplace pas un vrai avocat.";
+
+        resultDiv.innerHTML = conseil.replace(/\n/g, "<br>");
+
+        // Sauvegarde automatique
+        const dossiers = JSON.parse(localStorage.getItem("justice_dossiers") || "[]");
+        dossiers.push({
+            date: new Date().toLocaleString(),
+            province, accusation, situation,
+            guide: conseil
         });
-    </script>
+        localStorage.setItem("justice_dossiers", JSON.stringify(dossiers));
+    };
+</script>
 </body>
 </html>
